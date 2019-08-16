@@ -10,6 +10,8 @@ import android.view.animation.*
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.customview.widget.ViewDragHelper.INVALID_POINTER
+import uz.jamshid.library.progress_bar.BaseProgressBar
+import uz.jamshid.library.progress_bar.CircleProgressBar
 import java.lang.Exception
 import kotlin.math.*
 

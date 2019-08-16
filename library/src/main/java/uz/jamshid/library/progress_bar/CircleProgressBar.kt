@@ -1,4 +1,4 @@
-package uz.jamshid.igrefreshlayout
+package uz.jamshid.library.progress_bar
 
 import android.animation.Animator
 import android.animation.ValueAnimator
@@ -6,28 +6,30 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.animation.LinearInterpolator
-import uz.jamshid.library.BaseProgressBar
 import uz.jamshid.library.IGRefreshLayout
 
-class LineProgressBar @JvmOverloads constructor(
+
+class CircleProgressBar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : BaseProgressBar(context, attrs, defStyleAttr) {
+) : BaseProgressBar(context, attrs, defStyleAttr){
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     private var backColor = Color.LTGRAY
     private var frontColor = Color.GRAY
     private val backPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+
     private var borderWidth = 4.0f
-    private val left = 10f
-    private var top = 60f
-    private var isLoaded = false
 
+    private var size = (80 * context.resources.displayMetrics.density).toInt()
+    private var mIndeterminateSweep: Float = 0f
+    private var mStartAngle: Float = 0f
+
+    private var mRect: RectF? = null
     private var progressAnimator: ValueAnimator? = null
-
-    private var loadingPercent = 0f
 
     init {
         paint.color = frontColor
@@ -36,6 +38,10 @@ class LineProgressBar @JvmOverloads constructor(
         backPaint.color = backColor
         backPaint.style = Paint.Style.STROKE
         backPaint.strokeWidth = borderWidth
+
+        mRect = RectF()
+        mIndeterminateSweep = 85f
+
     }
 
     fun setColors(backColor: Int, frontColor: Int){
@@ -43,25 +49,34 @@ class LineProgressBar @JvmOverloads constructor(
         backPaint.color = backColor
     }
 
+    fun setSize(px: Int){
+        size = (px * context.resources.displayMetrics.density).toInt()
+    }
+
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-
-        top = (mParent.DRAG_MAX_DISTANCE/2).toFloat()
-        var currentPercent = (width - 10f)*(mPercent/100)
-        val lineWidth = width - 10f
-        if(currentPercent<=10)
-            currentPercent = 10f
-
-        canvas?.drawLine(left, top, lineWidth, top, backPaint)
-
-        if(isLoading){
-            if(isLoaded)
-                canvas?.drawLine(left, top, loadingPercent, top, paint)
-            else
-                canvas?.drawLine(loadingPercent, top, lineWidth, top, paint)
-        }else{
-            canvas?.drawLine(left, top, currentPercent, top, paint)
+        mRect?.apply {
+            left = ((width - size/2)/2).toFloat()
+            top = mParent.DRAG_MAX_DISTANCE / 3f
+            right = mRect?.left!! + size/2
+            bottom = mRect?.top!! + size/2
         }
+
+        canvas?.drawArc(mRect!!, 270f, 360f, false, backPaint)
+
+        if(isLoading)
+            canvas?.drawArc(mRect!!, mStartAngle, mIndeterminateSweep, false, paint)
+        else
+            drawProgress(canvas!!)
+    }
+
+
+    private fun drawProgress(canvas: Canvas){
+        canvas.drawArc(mRect!!, 270f, mPercent*3.6f, false, paint)
+    }
+
+    override fun setParent(parent: IGRefreshLayout) {
+        mParent = parent
     }
 
     override fun setPercent(percent: Float) {
@@ -69,31 +84,24 @@ class LineProgressBar @JvmOverloads constructor(
         invalidate()
     }
 
-    override fun setParent(parent: IGRefreshLayout) {
-        mParent = parent
-    }
-
     override fun start() {
         isLoading = true
-        mPercent = 0f
         resetAnimation()
     }
 
     override fun stop() {
-        mPercent = 0f
         stopAnimation()
     }
-
 
     private fun resetAnimation(){
         if(progressAnimator != null && progressAnimator!!.isRunning)
             progressAnimator?.cancel()
 
-        progressAnimator = ValueAnimator.ofFloat(10f, width.toFloat())
+        progressAnimator = ValueAnimator.ofFloat(0f, 360f)
         progressAnimator?.duration = 500
         progressAnimator?.interpolator = LinearInterpolator()
         progressAnimator?.addUpdateListener {
-            loadingPercent = it.animatedValue as Float
+            mStartAngle = it.animatedValue as Float
             invalidate()
         }
         progressAnimator?.start()
@@ -103,7 +111,6 @@ class LineProgressBar @JvmOverloads constructor(
             }
 
             override fun onAnimationEnd(p0: Animator?) {
-                isLoaded = !isLoaded
                 resetAnimation()
             }
 
@@ -120,12 +127,11 @@ class LineProgressBar @JvmOverloads constructor(
 
     private fun stopAnimation(){
         isLoading = false
-        isLoaded = false
+
         if(progressAnimator != null) {
             progressAnimator?.cancel()
             progressAnimator?.removeAllListeners()
             progressAnimator = null
         }
     }
-
 }

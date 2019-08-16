@@ -6,7 +6,8 @@ import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
-import uz.jamshid.library.CircleProgressBar
+import uz.jamshid.library.progress_bar.CircleProgressBar
+import uz.jamshid.library.progress_bar.LineProgressBar
 
 class MainActivity : AppCompatActivity() {
 
