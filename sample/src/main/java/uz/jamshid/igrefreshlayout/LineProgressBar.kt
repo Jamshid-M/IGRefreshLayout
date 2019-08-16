@@ -1,0 +1,131 @@
+package uz.jamshid.igrefreshlayout
+
+import android.animation.Animator
+import android.animation.ValueAnimator
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.util.AttributeSet
+import android.view.animation.LinearInterpolator
+import uz.jamshid.library.BaseProgressBar
+import uz.jamshid.library.IGRefreshLayout
+
+class LineProgressBar @JvmOverloads constructor(
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+) : BaseProgressBar(context, attrs, defStyleAttr) {
+
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+    private var backColor = Color.LTGRAY
+    private var frontColor = Color.GRAY
+    private val backPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private var borderWidth = 4.0f
+    private val left = 10f
+    private var top = 60f
+    private var isLoaded = false
+
+    private var progressAnimator: ValueAnimator? = null
+
+    private var loadingPercent = 0f
+
+    init {
+        paint.color = frontColor
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = borderWidth
+        backPaint.color = backColor
+        backPaint.style = Paint.Style.STROKE
+        backPaint.strokeWidth = borderWidth
+    }
+
+    fun setColors(backColor: Int, frontColor: Int){
+        paint.color = frontColor
+        backPaint.color = backColor
+    }
+
+    override fun onDraw(canvas: Canvas?) {
+        super.onDraw(canvas)
+
+        top = (mParent.DRAG_MAX_DISTANCE/2).toFloat()
+        var currentPercent = (width - 10f)*(mPercent/100)
+        val lineWidth = width - 10f
+        if(currentPercent<=10)
+            currentPercent = 10f
+
+        canvas?.drawLine(left, top, lineWidth, top, backPaint)
+
+        if(isLoading){
+            if(isLoaded)
+                canvas?.drawLine(left, top, loadingPercent, top, paint)
+            else
+                canvas?.drawLine(loadingPercent, top, lineWidth, top, paint)
+        }else{
+            canvas?.drawLine(left, top, currentPercent, top, paint)
+        }
+    }
+
+    override fun setPercent(percent: Float) {
+        mPercent = if (percent >= 100f) 100f else percent
+        invalidate()
+    }
+
+    override fun setParent(parent: IGRefreshLayout) {
+        mParent = parent
+    }
+
+    override fun start() {
+        isLoading = true
+        mPercent = 0f
+        resetAnimation()
+    }
+
+    override fun stop() {
+        mPercent = 0f
+        stopAnimation()
+    }
+
+
+    private fun resetAnimation(){
+        if(progressAnimator != null && progressAnimator!!.isRunning)
+            progressAnimator?.cancel()
+
+        progressAnimator = ValueAnimator.ofFloat(10f, width.toFloat())
+        progressAnimator?.duration = 500
+        progressAnimator?.interpolator = LinearInterpolator()
+        progressAnimator?.addUpdateListener {
+            loadingPercent = it.animatedValue as Float
+            invalidate()
+        }
+        progressAnimator?.start()
+        progressAnimator?.addListener(object : Animator.AnimatorListener{
+            override fun onAnimationRepeat(p0: Animator?) {
+
+            }
+
+            override fun onAnimationEnd(p0: Animator?) {
+                isLoaded = !isLoaded
+                resetAnimation()
+            }
+
+            override fun onAnimationCancel(p0: Animator?) {
+
+            }
+
+            override fun onAnimationStart(p0: Animator?) {
+
+            }
+
+        })
+    }
+
+    private fun stopAnimation(){
+        isLoading = false
+        isLoaded = false
+        if(progressAnimator != null) {
+            progressAnimator?.cancel()
+            progressAnimator?.removeAllListeners()
+            progressAnimator = null
+        }
+    }
+
+}
