@@ -5,8 +5,8 @@
 
 ## Instagram like refresh layout
 
-### It is similar to pull to refresh layout, which has in instagram. </br>
-### Main idea was taken from https://github.com/Yalantis/Phoenix and behaviour of layout was changed.
+#### It is similar to pull to refresh layout, which has in instagram. </br>
+#### Main idea was taken from https://github.com/Yalantis/Phoenix and behaviour of layout was changed.
 
 
 ![Alt Text](https://github.com/Jamshid-M/IGRefreshLayout/blob/master/gif/cbp.gif)
