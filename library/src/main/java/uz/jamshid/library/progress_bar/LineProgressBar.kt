@@ -19,9 +19,9 @@ class LineProgressBar @JvmOverloads constructor(
     private var backColor = Color.LTGRAY
     private var frontColor = Color.GRAY
     private val backPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private var borderWidth = 4.0f
-    private val left = 10f
-    private var top = 60f
+    private var borderWidth = dp2px(4).toFloat()
+    private var left = dp2px(10).toFloat()
+    private var top = dp2px(60).toFloat()
     private var isLoaded = false
 
     private var progressAnimator: ValueAnimator? = null
@@ -37,6 +37,16 @@ class LineProgressBar @JvmOverloads constructor(
         backPaint.strokeWidth = borderWidth
     }
 
+    fun setLeftAndTop(left: Int, top: Int){
+        this.left = dp2px(left).toFloat()
+        this.top = dp2px(top).toFloat()
+    }
+
+    fun setBorderWidth(width: Int){
+        paint.strokeWidth = dp2px(width).toFloat()
+        backPaint.strokeWidth = dp2px(width).toFloat()
+    }
+
     fun setColors(backColor: Int, frontColor: Int){
         paint.color = frontColor
         backPaint.color = backColor
@@ -46,10 +56,10 @@ class LineProgressBar @JvmOverloads constructor(
         super.onDraw(canvas)
 
         top = (mParent.DRAG_MAX_DISTANCE/2).toFloat()
-        var currentPercent = (width - 10f)*(mPercent/100)
-        val lineWidth = width - 10f
-        if(currentPercent<=10)
-            currentPercent = 10f
+        var currentPercent = (width - left)*(mPercent/100)
+        val lineWidth = width - left
+        if(currentPercent<=left)
+            currentPercent = left
 
         canvas?.drawLine(left, top, lineWidth, top, backPaint)
 
@@ -88,7 +98,7 @@ class LineProgressBar @JvmOverloads constructor(
         if(progressAnimator != null && progressAnimator!!.isRunning)
             progressAnimator?.cancel()
 
-        progressAnimator = ValueAnimator.ofFloat(10f, width.toFloat())
+        progressAnimator = ValueAnimator.ofFloat(left, width.toFloat())
         progressAnimator?.duration = 500
         progressAnimator?.interpolator = LinearInterpolator()
         progressAnimator?.addUpdateListener {

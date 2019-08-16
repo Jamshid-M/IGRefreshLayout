@@ -1,6 +1,7 @@
 package uz.jamshid.library
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -46,6 +47,9 @@ class IGRefreshLayout @JvmOverloads constructor(
     private var mBar: BaseProgressBar = CircleProgressBar(context)
     private var callback: InstaRefreshCallback?=null
     private var customViewSet = false
+    private var customView: View?=null
+    private var customViewHeight: Int = 0
+    private var customViewWidth: Int = 0
 
     init {
         mDecelerateInterpolator = DecelerateInterpolator(DECELERATE_INTERPOLATION_FACTOR)
@@ -54,6 +58,7 @@ class IGRefreshLayout @JvmOverloads constructor(
         setRefreshing(false)
         setupAttributes(attrs)
         mTotalDragDistance = dp2px(DRAG_MAX_DISTANCE)
+        setBackgroundColor(Color.WHITE)
 
         setWillNotDraw(false)
         ViewCompat.setChildrenDrawingOrderEnabled(this, true)
@@ -85,6 +90,13 @@ class IGRefreshLayout @JvmOverloads constructor(
         addView(mBar, 0)
     }
 
+    fun setCustomView(view: View, height: Int, width: Int){
+        customView = view
+        customViewHeight = height
+        customViewWidth = width
+        addView(view, 0)
+    }
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
@@ -99,6 +111,8 @@ class IGRefreshLayout @JvmOverloads constructor(
 
         mTarget?.measure(width, height)
         mBar.measure(width, height)
+        if(customView!=null)
+            customView?.measure(width, height)
     }
 
     private fun ensureTarget(){
@@ -378,6 +392,15 @@ class IGRefreshLayout @JvmOverloads constructor(
 
         mTarget?.layout(left, top + mCurrentOffsetTop, left + width - right, top + height - bottom + mCurrentOffsetTop)
         mBar.layout(left, top, left+width-right, top+height-bottom)
+        if(customView!=null) {
+            if(DRAG_MAX_DISTANCE - customViewHeight <= 0)
+                customView?.layout(left, top+dp2px(30), left + width - right, customViewHeight+dp2px(30))
+            else {
+                val diff = DRAG_MAX_DISTANCE - customViewHeight
+                val center = (width - customViewWidth)/2
+                customView?.layout(center, diff/2, customViewWidth+center, DRAG_MAX_DISTANCE - diff/2)
+            }
+        }
     }
 
     fun setRefreshListener(action:()->Unit){

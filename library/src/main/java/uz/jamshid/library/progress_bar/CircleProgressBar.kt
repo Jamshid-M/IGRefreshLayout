@@ -8,7 +8,9 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
+import android.view.animation.ScaleAnimation
 import uz.jamshid.library.IGRefreshLayout
 
 
@@ -22,9 +24,9 @@ class CircleProgressBar @JvmOverloads constructor(
     private var frontColor = Color.GRAY
     private val backPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
-    private var borderWidth = 4.0f
+    private var borderWidth = dp2px(4).toFloat()
 
-    private var size = (80 * context.resources.displayMetrics.density).toInt()
+    private var size = dp2px(80)
     private var mIndeterminateSweep: Float = 0f
     private var mStartAngle: Float = 0f
 
@@ -42,6 +44,11 @@ class CircleProgressBar @JvmOverloads constructor(
         mRect = RectF()
         mIndeterminateSweep = 85f
 
+    }
+
+    fun setBorderWidth(width: Int){
+        paint.strokeWidth = dp2px(width).toFloat()
+        backPaint.strokeWidth = dp2px(width).toFloat()
     }
 
     fun setColors(backColor: Int, frontColor: Int){

@@ -1,6 +1,5 @@
 package uz.jamshid.igrefreshlayout
 
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
@@ -26,10 +25,11 @@ class MainActivity : AppCompatActivity() {
             }, 3000)
         }
 
-        val cc = CircleProgressBar(this)
 
+        val cc = CircleProgressBar(this)
+        cc.setSize(90)
         val l = LineProgressBar(this)
-        l.setColors(Color.parseColor("#84ff9d"), Color.parseColor("#004500"))
-        swipe.setCustomBar(l)
+//        l.setColors(Color.parseColor("#84ff9d"), Color.parseColor("#004500"))
+        swipe.setCustomBar(Circle(this))
     }
 }
