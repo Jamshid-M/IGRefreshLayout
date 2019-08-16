@@ -14,6 +14,14 @@
 
 ## Usage
 
+Add it in your root build.gradle at the end of repositories
+```
+repositories {
+
+        maven { url 'https://jitpack.io' }
+    }
+```
+
 For a working implementation check out source from sample directory
 ```
 dependencies {
