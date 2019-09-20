@@ -2,6 +2,8 @@
 
 [![](https://jitpack.io/v/Jamshid-M/IGRefreshLayout.svg)](https://jitpack.io/#Jamshid-M/IGRefreshLayout)
 
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-IGRefreshLayout-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/7859)
+
 
 ## Instagram like refresh layout
 
