@@ -27,7 +27,7 @@ repositories {
 For a working implementation check out source from sample directory
 ```
 dependencies {
-	implementation 'com.github.Jamshid-M:IGRefreshLayout:1.0.2'
+	implementation 'com.github.Jamshid-M:IGRefreshLayout:1.0.3'
 }
 ```
 
