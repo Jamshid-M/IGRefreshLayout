@@ -5,7 +5,7 @@
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-IGRefreshLayout-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/7859)
 
  
-#### Instagram like refresh layout
+## Instagram like refresh layout
 
 #### It is similar to pull to refresh layout, which has in instagram. </br>
 #### Main idea was taken from https://github.com/Yalantis/Phoenix and behaviour of layout was changed.
